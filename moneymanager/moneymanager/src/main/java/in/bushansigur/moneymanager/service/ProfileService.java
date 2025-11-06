@@ -83,7 +83,7 @@ public class ProfileService {
                 .orElse(false);
     }
 
-    public ProfileEntity getCurrentProfile(String email) {
+    public ProfileEntity getCurrentProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return profileRepository.findByEmail(authentication.getName())
                 .orElseThrow(()-> new UsernameNotFoundException("Profile not found with email: " + authentication.getName()));
@@ -92,7 +92,7 @@ public class ProfileService {
     public ProfileDTO getCurrentProfileDTO(String email) {
         ProfileEntity currentUser = null;
         if(email == null) {
-            currentUser = getCurrentProfile(email);
+            currentUser = getCurrentProfile();
         } else {
             currentUser = profileRepository.findByEmail(email)
                     .orElseThrow(()-> new UsernameNotFoundException("Profile not found with email: " + email));
