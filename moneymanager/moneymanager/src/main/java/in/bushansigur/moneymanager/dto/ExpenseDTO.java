@@ -1,5 +1,7 @@
 package in.bushansigur.moneymanager.dto;
 
+import in.bushansigur.moneymanager.entity.CategoryEntity;
+import in.bushansigur.moneymanager.entity.ProfileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +20,8 @@ public class ExpenseDTO {
     private String icon;
     private LocalDateTime date;
     private BigDecimal amount;
+    private String categoryName;
+    private Long categoryId;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 }
