@@ -9,6 +9,10 @@ import in.bushansigur.moneymanager.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ExpenseService {
@@ -24,9 +28,33 @@ public class ExpenseService {
         newExpense = expenseRepository.save(newExpense);
         return toDTO(newExpense);
     }
+
+    public List<ExpenseDTO> getCurrentMonthExpenseForUser() {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        LocalDate  now = LocalDate.now();
+        LocalDateTime startDate = now.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endDate = now.withDayOfMonth(now.lengthOfMonth()).atTime(23, 59, 59);
+        List<ExpenseEntity> list = expenseRepository.findByProfileIdAndDateBetween(profile.getId(), startDate, endDate);
+        return list.stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    public void  deleteExpense(Long expenseId){
+        ProfileEntity profile = profileService.getCurrentProfile();
+        ExpenseEntity expense = expenseRepository.findById(expenseId).orElseThrow(()-> new RuntimeException("Expense not found"));
+        if(!profile.getId().equals(expense.getProfile().getId())) {
+            throw new RuntimeException("Unauthorized to delete expense");
+        }
+        expenseRepository.delete(expense);
+    }
+
+
+
     //handel method
     private ExpenseEntity toEntity(ExpenseDTO dTO, ProfileEntity profile, CategoryEntity category) {
         return ExpenseEntity.builder()
+                .id(dTO.getId())
                 .name(dTO.getName())
                 .amount(dTO.getAmount())
                 .category(category)
@@ -36,6 +64,7 @@ public class ExpenseService {
     }
     public ExpenseDTO toDTO(ExpenseEntity entity){
         return ExpenseDTO.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .amount(entity.getAmount())
                 .icon(entity.getIcon())

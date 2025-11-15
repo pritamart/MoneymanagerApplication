@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,6 +26,6 @@ public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Long> {
     List<ExpenseEntity> findByProfileIdAndDateBetweenAndNameContainingIgnoreCase(
             Long profileId, LocalDateTime start, LocalDateTime end, String name, Sort sort);
 
-    List<ExpenseEntity> findByProfileIdAndDateBetween(Long profileId, LocalDateTime start, LocalDateTime end);
+    List<ExpenseEntity> findByProfileIdAndDateBetween(Long profileId, LocalDateTime  start, LocalDateTime  end);
 
 }

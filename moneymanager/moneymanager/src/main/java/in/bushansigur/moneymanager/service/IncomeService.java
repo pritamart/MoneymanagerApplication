@@ -1,13 +1,19 @@
 package in.bushansigur.moneymanager.service;
 
+import in.bushansigur.moneymanager.dto.ExpenseDTO;
 import in.bushansigur.moneymanager.dto.IncomeDTO;
 import in.bushansigur.moneymanager.entity.CategoryEntity;
+import in.bushansigur.moneymanager.entity.ExpenseEntity;
 import in.bushansigur.moneymanager.entity.IncomeEntity;
 import in.bushansigur.moneymanager.entity.ProfileEntity;
 import in.bushansigur.moneymanager.repository.CategoryRepository;
 import in.bushansigur.moneymanager.repository.IncomeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +32,25 @@ public class IncomeService {
 
     }
 
+    public List<IncomeDTO> getCurrentMonthIncomeForUser() {
+        ProfileEntity profile = profileService.getCurrentProfile();
+        LocalDate now = LocalDate.now();
+        LocalDateTime startDate = now.withDayOfMonth(1).atStartOfDay();
+        LocalDateTime endDate = now.withDayOfMonth(now.lengthOfMonth()).atTime(23, 59, 59);
+        List<IncomeEntity> list = incomeRepository.findByProfileIdAndDateBetween(profile.getId(), startDate, endDate);
+        return list.stream()
+                .map(this::toDTO)
+                .toList();
+    }
 
+    public void  deleteIncome(Long incomeId){
+        ProfileEntity profile = profileService.getCurrentProfile();
+        IncomeEntity income = incomeRepository.findById(incomeId).orElseThrow(()-> new RuntimeException("Income not found"));
+        if(!profile.getId().equals(income.getProfile().getId())) {
+            throw new RuntimeException("Unauthorized to delete income");
+        }
+        incomeRepository.delete(income);
+    }
 
 
     //handel method
@@ -41,6 +65,7 @@ public class IncomeService {
     }
     public IncomeDTO toDTO(IncomeEntity entity){
         return IncomeDTO.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .amount(entity.getAmount())
                 .icon(entity.getIcon())

@@ -20,6 +20,4 @@ public class IncomeDTO {
     private Long categoryId;
     private LocalDateTime date;
     private BigDecimal amount;
-    private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
 }

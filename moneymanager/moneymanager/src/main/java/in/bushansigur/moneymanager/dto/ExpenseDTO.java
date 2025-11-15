@@ -22,6 +22,4 @@ public class ExpenseDTO {
     private BigDecimal amount;
     private String categoryName;
     private Long categoryId;
-    private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
 }
